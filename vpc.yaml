@@ -1,0 +1,130 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: This template deploys a VPC with a public and private subnet in one (1) Availability Zone; an Internet Gateway with a route table in the public subnet pointing to it; a NAT gateway in the public subnet; and a default route table in the private subnet pointing to the NAT gateway.
+
+Resources:
+    VPC:
+        Type: AWS::EC2::VPC
+        Properties:
+            CidrBlock: 172.31.0.0/16
+            Tags:
+              - Key: Name
+                Value: !Ref AWS::StackName
+
+    PublicSubnet:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            AvailabilityZone:
+                Fn::Select:
+                  - 0
+                  - Fn::GetAZs: ""
+            CidrBlock: 172.31.0.0/24
+            MapPublicIpOnLaunch: true
+            Tags:
+              - Key: Name
+                Value: !Join ["-", [!Ref "AWS::StackName","pub-sub"]]
+    
+    PrivateSubnet: 
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            AvailabilityZone:
+                Fn::Select:
+                  - 0
+                  - Fn::GetAZs: ""
+            CidrBlock: 172.31.3.0/24
+            MapPublicIpOnLaunch: false
+            Tags: 
+              - Key: Name 
+                Value: !Join ["-", [!Ref "AWS::StackName","priv-sub"]]
+    
+    InternetGateway:
+        Type: AWS::EC2::InternetGateway
+        Properties:
+            Tags:
+              - Key: Name
+                Value: !Join ["-", [!Ref "AWS::StackName","-IG"]]
+
+    Gateway2Internet:
+        Type: AWS::EC2::VPCGatewayAttachment
+        Properties:
+            VpcId: !Ref VPC
+            InternetGatewayId: !Ref InternetGateway
+
+    PublicRouteTable:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId: !Ref VPC
+            Tags:
+              - Key: Name
+                Value: !Join ["-", [!Ref "AWS::StackName","-PubRT"]]
+    
+    DefaultPublicRoute:
+        Type: AWS::EC2::Route
+        DependsOn: Gateway2Internet
+        Properties:
+            RouteTableId: !Ref PublicRouteTable
+            DestinationCidrBlock: 0.0.0.0/0
+            GatewayId: !Ref InternetGateway
+    
+    PubSubRTAssoc:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            RouteTableId: !Ref PublicRouteTable
+            SubnetId: !Ref PublicSubnet
+
+    NatGatewayEIP:
+        Type: AWS::EC2::EIP
+        DependsOn: VPC
+        Properties:
+            Domain: vpc
+    
+    NatGateway:
+        Type: AWS::EC2::NatGateway
+        Properties:
+            AllocationId: !GetAtt NatGatewayEIP.AllocationId
+            SubnetId: !Ref PublicSubnet
+
+    PrivateRouteTable:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId: !Ref VPC
+            Tags:
+              - Key: Name
+                Value: !Join ["-", [!Ref "AWS::StackName","-PrivRT"]]
+    
+    DefaultPrivateRoute:
+        Type: AWS::EC2::Route
+        Properties:
+            RouteTableId: !Ref PrivateRouteTable
+            DestinationCidrBlock: 0.0.0.0/0
+            NatGatewayId: !Ref NatGateway
+    
+    PrivSubRTAssoc:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId: !Ref PrivateSubnet
+            RouteTableId: !Ref PrivateRouteTable
+
+Outputs:
+    VPC:
+        Description: A reference to the created VPC
+        Value: !Ref VPC
+        Export:
+            Name: !Join ["-", [!Ref "AWS::StackName","vpc"]]
+    PublicSubnet:
+        Description: A reference to the created public subnet
+        Value: !Ref PublicSubnet
+        Export:
+            Name: !Join ["-", [!Ref "AWS::StackName","pub-sub"]]
+    PrivateSubnet:
+        Description: A reference to the created private subnet
+        Value: !Ref PrivateSubnet
+        Export:
+            Name: !Join ["-", [!Ref "AWS::StackName","priv-sub"]]
+    privVPCSecGroup:
+        Description: Default security for Lambda VPC
+        Value: !GetAtt VPC.DefaultSecurityGroup
+        Export:
+            Name: !Join ["-", [!Ref "AWS::StackName","vpc-sg"]]
