@@ -1,4 +1,4 @@
-#  CloudFormation
+#  AWS CloudFormation Scripts
 
 > Demystifying Infrastructure as Code (IaC) on AWS.
 
