@@ -39,6 +39,14 @@ Most of the time it's just:
 $ aws cloudformation create-stack --stack-name <STACK-NAME> --template-body <FILE-PATH>
 ```
 
+Other times when providing a local path to a resource that needs to be uploaded to S3 previous to deployment, i.e. the code for a lambda function, CLoudFormation can upload the file to the bucket and replace the path in your file with the path of the file in the bucket.
+
+```
+$ aws cloudformation package --template-file <FILE-PATH> --s3-bucket <BUCKET-NAME> --output-template-file <OUTPUT-FILE>
+
+# aws cloudformation deploy --template-file <OUTPUT-FILE> --stack-name <STACK-NAME>
+```
+
 ## Authors
 
 👤 **Adriaan Beiertz**
