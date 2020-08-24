@@ -1,73 +1,57 @@
-# Project Name
+#  CloudFormation
 
-> One paragraph statement about the project.
+> Demystifying Infrastructure as Code (IaC) on AWS.
 
-![screenshot](./app_screenshot.png)
+![screenshot](./cf_screenshot.png)
 
 Additional description about the project and its features.
 
 ## Built With
 
-- Major languages,
-- frameworks,
-- technologies used
-
-## Live Demo
-
-[Live Demo Link](https://livedemo.com)
-
+- AWS CLI
+- YAML
 
 ## Getting Started
 
-**This is an example of how you may give instructions on setting up your project locally.**
-**Modify this file to match your project, remove sections that don't apply. For example: delete the testing section if the currect project doesn't require testing.**
-
-
-To get a local copy up and running follow these simple example steps.
+TBD
 
 ### Prerequisites
 
+TBD
+
 ### Setup
+
+TBD
 
 ### Install
 
+TBD
+
 ### Usage
 
-### Run tests
+TBD
 
 ### Deployment
 
+Most of the time it's just:
 
+```
+$ aws cloudformation create-stack --stack-name <STACK-NAME> --template-body <FILE-PATH>
+```
 
 ## Authors
 
-👤 **Author1**
+👤 **Adriaan Beiertz**
 
-- Github: [@githubhandle](https://github.com/githubhandle)
-- Twitter: [@twitterhandle](https://twitter.com/twitterhandle)
-- Linkedin: [linkedin](https://linkedin.com/linkedinhandle)
-
-👤 **Author2**
-
-- Github: [@githubhandle](https://github.com/githubhandle)
-- Twitter: [@twitterhandle](https://twitter.com/twitterhandle)
-- Linkedin: [linkedin](https://linkedin.com/linkedinhandle)
+- [Github](https://github.com/adriaanbd)
+- [Twitter](https://twitter.com/abeiertz)
+- [Linkedin](https://linkedin.com/adriaanbd)
 
 ## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome!
 
 Feel free to check the [issues page](issues/).
-
-## Show your support
-
-Give a ⭐️ if you like this project!
-
-## Acknowledgments
-
-- Hat tip to anyone whose code was used
-- Inspiration
-- etc
 
 ## 📝 License
 
