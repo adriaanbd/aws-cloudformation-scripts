@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: This template creates an a lambda function and an IAM execution role with a policy allowing access to everything. 
+Description: This template creates a lambda function and an IAM execution role with a sudo policy allowing access to everything (sudo lambda, get it?). If the code to the lambda function is a local file path, then this template needs to be packaged with AWS CLI's cloudformation `package` api call first so that the file is uploaded by cloudformation to an S3 bucket first so that it can be deployed with the `deploy` api call. Alternatively, you can provide the S3 link to the file.
 
 Resources:
     LambdaExecutionRole:
