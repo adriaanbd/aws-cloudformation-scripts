@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: This template creates a lambda function, an IAM execution role with a sudo policy allowing access to everything, and a lambda layer. Layers are provided via number of different ways. When a local folder path is provided, the template needs to be packaged with AWS CLI `cloudformation package` API call so that its uploaded to an S3 bucket and the path substituted with the url to the object in the S3 bucket, which you can then deploy with the `cloudformation deploy` api call. The Amazon Resource Name (ARN) is provided in the Layer thanks to https://github.com/keithrozario/Klayers.
+
+Resources:
+    LambdaExecutionRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                  - Effect: Allow
+                    Principal:
+                        Service:
+                          - lambda.amazonaws.com
+                    Action:
+                      - sts:AssumeRole
+            Description: Role for lambda execution
+            Path: "/"
+            Policies:
+              - PolicyName: SudoAWSLambdaExecRole
+                PolicyDocument:
+                    Version: 2012-10-17
+                    Statement:
+                      - Effect: Allow
+                        Action: '*'
+                        Resource: '*'
+    TestLambda:
+        Type: AWS::Lambda::Function
+        Properties:
+            Handler: spacy_handler.handler
+            Role:
+                Fn::GetAtt:
+                    - LambdaExecutionRole
+                    - Arn
+            Layers:
+              - !Sub arn:aws:lambda:${AWS::Region}:770693421928:layer:Klayers-python38-spacy:24
+              - !Sub arn:aws:lambda:${AWS::Region}:770693421928:layer:Klayers-python38-spacy_model_en_small:1
+              - !Sub arn:aws:lambda:${AWS::Region}:770693421928:layer:Klayers-python38-spacy_model_es_small:1
+            Code: .\spacy_handler.py
+            Runtime: python3.8
+    
